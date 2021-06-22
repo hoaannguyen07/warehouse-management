@@ -1,13 +1,6 @@
 USE [warehouse_management]
 GO
 
-/****** Object:  StoredProcedure [dbo].[uspCheckPermissions]    Script Date: 6/14/2021 11:17:10 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 -- Delete a personnel permission in the database
 --EXEC [dbo].[uspDeletePersonnelPermission]
 --	@username NVARCHAR(50), -- username of the personnel this permission will be revoked from
@@ -39,18 +32,26 @@ BEGIN
 
 	IF EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=@username)
 	BEGIN
-		IF EXISTS(SELECT dbo.permissions.id FROM dbo.permissions WHERE action=@action AND object=@object)
+		IF EXISTS(SELECT permissions.id FROM permissions
+					INNER JOIN dbo.permission_actions ON dbo.permissions.action_id = dbo.permission_actions.id
+					INNER JOIN dbo.permission_objects ON dbo.permissions.object_id = dbo.permission_objects.id
+					WHERE dbo.permission_actions.action = @action 
+					AND dbo.permission_objects.object = @object)
 		BEGIN
 				-- only delete permission from @username if @username has the [@action-@object] permission in the first place
-				IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
+				IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
 							FROM dbo.personnel_permissions
 							INNER JOIN dbo.personnel
 							ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
 							INNER JOIN dbo.permissions
 							ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+							INNER JOIN dbo.permission_actions
+							ON dbo.permissions.action_id = dbo.permission_actions.id
+							INNER JOIn dbo.permission_objects
+							ON dbo.permissions.object_id = dbo.permission_objects.id
 							WHERE dbo.personnel.username = @username 
-							AND dbo.permissions.action = @action 
-							AND dbo.permissions.object = @object)
+							AND dbo.permission_actions.action = @action 
+							AND dbo.permission_objects.object = @object)
 				BEGIN
 						-- check if @auth has the authority to create personnel
 						DECLARE @check_permissions_response nvarchar(3)
@@ -67,18 +68,24 @@ BEGIN
 								DELETE FROM dbo.personnel_permissions 
 								WHERE
 								personnel_id=(SELECT TOP 1 id FROM dbo.personnel WHERE username=@username) AND
-								permissions_id=(SELECT TOP 1 id FROM dbo.permissions WHERE action=@action AND object=@object)
+								permissions_id=(SELECT TOP 1 id FROM dbo.permissions 
+												WHERE action_id=(SELECT id FROM dbo.permission_actions WHERE action = @action) 
+												AND object_id=(SELECT id FROM dbo.permission_objects WHERE object = @object))
 
 								-- have to make sure permission is deleted from the database (in case no severe errors raised to push into CATCH block but database did not record properly)
-								IF (NOT EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
-									FROM dbo.personnel_permissions
-									INNER JOIN dbo.personnel
-									ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
-									INNER JOIN dbo.permissions
-									ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-									WHERE dbo.personnel.username = @username
-									AND dbo.permissions.action = @action 
-									AND dbo.permissions.object = @object))
+								IF NOT EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
+												FROM dbo.personnel_permissions
+												INNER JOIN dbo.personnel
+												ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
+												INNER JOIN dbo.permissions
+												ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+												INNER JOIN dbo.permission_actions
+												ON dbo.permissions.action_id = dbo.permission_actions.id
+												INNER JOIn dbo.permission_objects
+												ON dbo.permissions.object_id = dbo.permission_objects.id
+												WHERE dbo.personnel.username = @username 
+												AND dbo.permission_actions.action = @action 
+												AND dbo.permission_objects.object = @object)
 								BEGIN
 									SET @delete_personnel_permission_response = 'SUCCESS'
 								END

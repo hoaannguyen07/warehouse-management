@@ -1,14 +1,18 @@
 USE [warehouse_management]
 GO
 
-/****** Object:  StoredProcedure [dbo].[uspCheckPermissions]    Script Date: 6/14/2021 11:17:10 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 -- Checking if a [username] can perform an [action] on an [object/table]
+--EXEC [dbo].[uspCheckPersonnelPermission]
+--	@username NVARCHAR(50), -- username of personnel the permission is linked to
+--	@action NVARCHAR(10), -- action the permission is supposed to perform (create/read/update/delete)
+--	@object NVARCHAR(30), -- name of table that the action is supposed to have power over
+--	@response NVARCHAR(3)='' OUTPUT
+
+-- OUTPUT(S) (by precedence):
+--		1. 'NO' -> @username DOES NOT have the [@action-@object] permission
+--		2. 'YES' -> @username DOES have the [@action-@object] permission
+
+
 CREATE OR ALTER PROCEDURE [dbo].[uspCheckPersonnelPermission]
 	@username NVARCHAR(50), 
 	@action NVARCHAR(10), 
@@ -18,14 +22,18 @@ AS
 BEGIN
 	-- create response based on if an entry that relates @user to [@action-@object] exists in the table
 	IF EXISTS(SELECT dbo.personnel_permissions.id
-				FROM dbo.personnel
-				INNER JOIN dbo.personnel_permissions
-				ON personnel.id = personnel_permissions.personnel_id
-				INNER JOIN dbo.[permissions]
-				ON personnel_permissions.permissions_id = [permissions].id
-				WHERE personnel.username = @username
-				AND [permissions].action = @action
-				AND [permissions].object = @object)
+				FROM dbo.personnel_permissions
+				INNER JOIN dbo.personnel
+				ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
+				INNER JOIN dbo.permissions
+				ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+				INNER JOIN dbo.permission_actions
+				ON dbo.permissions.action_id = dbo.permission_actions.id
+				INNER JOIn dbo.permission_objects
+				ON dbo.permissions.object_id = dbo.permission_objects.id
+				WHERE dbo.personnel.username = @username 
+				AND dbo.permission_actions.action = @action 
+				AND dbo.permission_objects.object = @object)
 		SET @response = 'YES'
 	ELSE
 		SET @response = 'NO'

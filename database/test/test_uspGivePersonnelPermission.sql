@@ -40,15 +40,19 @@ EXEC dbo.uspDeletePersonnelPermission
 	@action = 'create',
 	@object = N'personnel',
 	@auth = 'test'
-IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
-			FROM dbo.personnel_permissions
-			INNER JOIN dbo.personnel
-			ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
-			INNER JOIN dbo.permissions
-			ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-			WHERE dbo.personnel.username = N'hoa' 
-			AND dbo.permissions.action = N'create' 
-			AND dbo.permissions.object = N'personnel')
+IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
+							FROM dbo.personnel_permissions
+							INNER JOIN dbo.personnel
+							ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
+							INNER JOIN dbo.permissions
+							ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+							INNER JOIN dbo.permission_actions
+							ON dbo.permissions.action_id = dbo.permission_actions.id
+							INNER JOIn dbo.permission_objects
+							ON dbo.permissions.object_id = dbo.permission_objects.id
+							WHERE dbo.personnel.username = N'hoa' 
+							AND dbo.permission_actions.action = 'create' 
+							AND dbo.permission_objects.object = 'personnel')
 BEGIN
 	SELECT 'Was not able to delete permission created in Test 1' AS error
 END
@@ -79,15 +83,19 @@ EXEC dbo.uspDeletePersonnelPermission
 	@action = 'update',
 	@object = N'palettes',
 	@auth = 'test'
-IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
-			FROM dbo.personnel_permissions
-			INNER JOIN dbo.personnel
-			ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
-			INNER JOIN dbo.permissions
-			ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-			WHERE dbo.personnel.username = N'hoa' 
-			AND dbo.permissions.action = N'update' 
-			AND dbo.permissions.object = N'palettes')
+IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
+							FROM dbo.personnel_permissions
+							INNER JOIN dbo.personnel
+							ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
+							INNER JOIN dbo.permissions
+							ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+							INNER JOIN dbo.permission_actions
+							ON dbo.permissions.action_id = dbo.permission_actions.id
+							INNER JOIn dbo.permission_objects
+							ON dbo.permissions.object_id = dbo.permission_objects.id
+							WHERE dbo.personnel.username = N'hoa' 
+							AND dbo.permission_actions.action = 'update' 
+							AND dbo.permission_objects.object = 'palettes')
 BEGIN
 	SELECT 'Was not able to delete permission created in Test 2' AS error
 END
@@ -136,15 +144,19 @@ EXEC dbo.uspDeletePersonnelPermission
 	@action = 'read',
 	@object = N'rows',
 	@auth = 'test'
-IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
-			FROM dbo.personnel_permissions
-			INNER JOIN dbo.personnel
-			ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
-			INNER JOIN dbo.permissions
-			ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-			WHERE dbo.personnel.username = N'hoa' 
-			AND dbo.permissions.action = N'read' 
-			AND dbo.permissions.object = N'rows')
+IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
+							FROM dbo.personnel_permissions
+							INNER JOIN dbo.personnel
+							ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
+							INNER JOIN dbo.permissions
+							ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+							INNER JOIN dbo.permission_actions
+							ON dbo.permissions.action_id = dbo.permission_actions.id
+							INNER JOIn dbo.permission_objects
+							ON dbo.permissions.object_id = dbo.permission_objects.id
+							WHERE dbo.personnel.username = N'hoa' 
+							AND dbo.permission_actions.action = 'read' 
+							AND dbo.permission_objects.object = 'rows')
 BEGIN
 	SELECT 'Was not able to delete permission created in Test 2' AS error
 END

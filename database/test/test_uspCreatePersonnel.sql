@@ -36,7 +36,7 @@ ELSE
 -- TEST 2
 -- Creating personnel w/ incorrect authorization, correct & unique user information, auth in personnel
 -- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = 'Unauthorized to create personnel'
+SET @EXPECTED = '%Unauthorized to create personnel%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'binh',
 	@password = N'binh123',
@@ -71,8 +71,8 @@ ELSE
 -- ============================================================================
 -- TEST 4
 -- Creating peronnel w/ correct authorization, fully repeating user information
--- EXPECTED OUTPUT = 'Cannot insert duplicate key...'
-SET @EXPECTED = '%Cannot insert duplicate key%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
@@ -89,8 +89,8 @@ ELSE
 -- ============================================================================
 -- TEST 5
 -- Creating peronnel w/ incorrect authorization, fully repeating user information, auth in personnel
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Unauthorized to create personnel%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
@@ -107,8 +107,8 @@ ELSE
 -- ============================================================================
 -- TEST 6
 -- Creating peronnel w/ incorrect authorization, fully repeating user information, auth not in personnel
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Unauthorized to create personnel%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
@@ -125,8 +125,8 @@ ELSE
 -- ============================================================================
 -- TEST 7
 -- Creating peronnel w/ correct authorization, repeating username but not password & full_name user information
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Cannot insert duplicate key%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'haibabon',
@@ -143,8 +143,8 @@ ELSE
 -- ============================================================================
 -- TEST 8
 -- Creating peronnel w/ incorrect authorization, repeating username but not password & full_name user information, auth in personnel
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Unauthorized to create personnel%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'onetwothree',
@@ -161,8 +161,8 @@ ELSE
 -- ============================================================================
 -- TEST 9
 -- Creating peronnel w/ incorrect authorization, repeating username but not password & full_name user information, auth not in personnel
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Unauthorized to create personnel%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'bonnamsau',
@@ -179,8 +179,8 @@ ELSE
 -- ============================================================================
 -- TEST 10
 -- Creating peronnel w/ correct authorization, repeating username & password but not full_name user information
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Cannot insert duplicate key%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
@@ -197,8 +197,8 @@ ELSE
 -- ============================================================================
 -- TEST 11
 -- Creating peronnel w/ incorrect authorization, repeating username & password but not full_name user information, auth in personnel
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Unauthorized to create personnel%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
@@ -215,8 +215,8 @@ ELSE
 -- ============================================================================
 -- TEST 12
 -- Creating peronnel w/ incorrect authorization, repeating username & password but not full_name user information, auth not in personnel
--- EXPECTED OUTPUT = 'Unauthorized to create personnel'
-SET @EXPECTED = '%Unauthorized to create personnel%'
+-- EXPECTED OUTPUT = 'Username already exist'
+SET @EXPECTED = '%Username already exist%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
@@ -309,4 +309,4 @@ ELSE
 
 SELECT * FROM [dbo].[personnel]
 
-DELETE FROM [dbo].[personnel] WHERE username<>'test'
+DELETE FROM [dbo].[personnel] WHERE username LIKE 'hoa_' OR username='hoa'

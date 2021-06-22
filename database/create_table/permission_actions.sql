@@ -1,0 +1,27 @@
+USE [warehouse_management]
+GO
+
+/****** Object:  Table [dbo].[permission_objects]    Script Date: 6/22/2021 12:05:27 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+--DROP TABLE IF EXISTS dbo.permission_actions
+
+CREATE TABLE [dbo].[permission_actions](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[action] [nvarchar](30) NOT NULL,
+ CONSTRAINT [PK_permission_actions] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UK_permission_actions_action] UNIQUE NONCLUSTERED 
+(
+	[action] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+

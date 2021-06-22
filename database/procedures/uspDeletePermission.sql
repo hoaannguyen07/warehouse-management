@@ -10,9 +10,9 @@ GO
 
 -- OUTPUT(S):
 --		1.'Invalid permission' -> [@action-@object] combo does not exist in the permissions table
---		2.'Unauthorized to delete personnel' -> Authorizing username does not have the permission to insert into permission
+--		2.'Unauthorized to delete permission' -> Authorizing username does not have the permission to delete permission
 --		3. ERROR_MESSAGE() -> error occurred during the DELETE operation of the permission
---		3.'SUCCESS' -> [@action-@object] combo is no longer in the permissions table. DOES NOT signify that a DELETE operation was made
+--		3.'SUCCESS' -> [@action-@object] combo is no longer in the permissions table.
 
 
 CREATE OR ALTER PROCEDURE [dbo].[uspDeletePermission]
@@ -33,7 +33,7 @@ BEGIN
 		EXEC dbo.uspCheckPersonnelPermission
 			@username = @auth,
 			@action = 'delete',
-			@object = 'permission',
+			@object = 'permissions',
 			@response = @check_permissions_response OUTPUT
 
 		-- if auth is granted, then go ahead with creating new personnel
@@ -70,5 +70,5 @@ BEGIN
 
 	-- return response message
 	SET @response = @delete_permission_response
-	--SELECT @@create_permission_response as reponse
+	--SELECT @delete_permission_response as reponse
 END

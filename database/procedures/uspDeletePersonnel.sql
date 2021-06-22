@@ -2,18 +2,21 @@ USE [warehouse_management]
 GO
 
 -- Procedure to delete a personnel from the personnel table
+--EXEC dbo.uspDeletePersonnel
+--	@username nvarchar(50), -- username to be taken out of the personnel table
+--	@auth nvarchar(50), -- username of the person requesting this personnel creation
+--	@response nvarchar(256) = '' OUTPUT
 
-
--- OUTPUT(S):
---		'Unauthorized to delete personnel' -> Authorizing username does not have the permission to insert into personnel
---		'Username does not exist' -> The input username does not exist in the personnel table
---		'SUCCESS' -> Entries of the personnel table with [username]=@username no longer exists in the personnel. 
---						DOES NOT signify that a DELETE operation was  called
+-- OUTPUT(S) (by precedence):
+--		1. 'Username does not exist' -> The input username does not exist in the personnel table
+--		2. 'Unauthorized to delete personnel' -> Authorizing username does not have the permission to insert into personnel
+--		3. ERROR_MESSAGE() -> Something went wrong during the DELETE operation of the @username
+--		3. 'SUCCESS' -> Successfully removed @username from the database (that personnel no longer exists)
 
 
 CREATE OR ALTER PROCEDURE dbo.uspDeletePersonnel
-	@username nvarchar(50), -- username to be taken out of the personnel table
-	@auth nvarchar(50), -- username of the person requesting this personnel creation
+	@username nvarchar(50),
+	@auth nvarchar(50),
 	@response nvarchar(256) = '' OUTPUT
 AS
 BEGIN
@@ -35,12 +38,21 @@ BEGIN
 		IF (@check_permissions_response = 'YES')
 		BEGIN
 			BEGIN TRY
+					DELETE FROM dbo.personnel WHERE username=@username
 
-					DELETE FROM dbo.personnel 
-					WHERE username=@username
+					IF NOT EXISTS(SELECT id FROM dbo.personnel WHERE username=@username)
+						SET @delete_personnel_response = 'SUCCESS'
+					ELSE
+					BEGIN						
+						DECLARE @message nvarchar(256) = NULL
+						SET @message = CONCAT('The DELETE operation was unable to remove the username [',@username,'] from the database')
 
-					SET @delete_personnel_response = 'SUCCESS'
-
+						RAISERROR(
+							@message, -- Message
+							16, -- Severity
+							1 -- State
+						)
+					END
 				
 			END TRY
 			BEGIN CATCH

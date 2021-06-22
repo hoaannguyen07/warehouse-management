@@ -2,6 +2,15 @@ USE [warehouse_management]
 GO
 
 -- PROCEDURE FOR HASING PASSWORDS IN THE PERSONNEL TABLE
+--EXEC dbo.uspVerifyLogin
+--	@username nvarchar(50), -- @username of personnel logging into
+--	@password nvarchar(50) -- @password of corresponding username
+
+-- OUTPUT(S) (by precedence):
+--		1. 'Incorrect Username/Password' -> incorrect username or password; was not differentiated into individual 'Incorrect Username' & 'Incorrect Password' for security reasons
+--		2. 'Successful Login' -> matching @username & @password in the database
+
+
 CREATE OR ALTER PROCEDURE dbo.uspVerifyLogin
 	@username nvarchar(50),
 	@password nvarchar(50)

@@ -1,7 +1,7 @@
 USE warehouse_management
+GO
 
 -- ADD ALL LOCATIONS OF EVERY COMBINATION OF ROW, COL, AND LEVEL FIRST THEN TAKE OUT INVALID LOCATIONS
-
 
 -- ADD ALL POSSIBLE COMBINATIONS OF ROW, COL, AND LEVEL INTO LOCATIONS TABLE
 -- LOOP THROUGH ALL ROWS
@@ -39,7 +39,7 @@ BEGIN
 				@rows_at_least,
 				@cols_at_least,
 				@levels_at_least,
-				(SELECT TOP 1 id FROM dbo.personnel WHERE username='hoa')
+				(SELECT TOP 1 id FROM dbo.personnel WHERE username='hoaannguyen07')
 			)
 
 			SET @levels_count = @levels_count + 1
@@ -67,3 +67,5 @@ DELETE FROM dbo.locations WHERE row_id >= 'H' AND column_id > 10
 SELECT * FROM dbo.locations
 
 SELECT row_id, column_id, level_id FROM dbo.locations WHERE row_id >= 'H' AND column_id > 10
+
+SELECT * FROM dbo.locations WHERE is_empty = 0x1

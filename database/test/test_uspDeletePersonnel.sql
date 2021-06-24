@@ -5,7 +5,7 @@
 USE [warehouse_management]
 GO
 
-DELETE FROM [dbo].[personnel] WHERE username<>'test'
+DELETE FROM [dbo].[personnel] WHERE username NOT IN ('test', 'hoaannguyen07')
 
 DECLARE @EXPECTED NVARCHAR(256)
 DECLARE @res NVARCHAR(256)
@@ -120,4 +120,4 @@ ELSE
 DELETE FROM [dbo].[personnel] WHERE username=N'hoa'
 
 
-DELETE FROM [dbo].[personnel] WHERE username<>'test'
+DELETE FROM [dbo].[personnel] WHERE username NOT IN ('test', 'hoaannguyen07')

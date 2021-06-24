@@ -1,7 +1,7 @@
 USE [warehouse_management]
 GO
 
-/****** Object:  Table [dbo].[personnel_permissions]    Script Date: 6/14/2021 9:46:15 PM ******/
+/****** Object:  Table [dbo].[personnel_permissions]    Script Date: 6/23/2021 11:59:07 AM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -15,6 +15,11 @@ CREATE TABLE [dbo].[personnel_permissions](
  CONSTRAINT [pk_personnel_permissions_id] PRIMARY KEY NONCLUSTERED 
 (
 	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [IX_personnel_permissions_personnelid_permissionsid] UNIQUE NONCLUSTERED 
+(
+	[personnel_id] ASC,
+	[permissions_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO

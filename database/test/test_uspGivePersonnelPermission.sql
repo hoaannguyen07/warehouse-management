@@ -15,6 +15,10 @@ EXEC dbo.uspCreatePersonnel
 
 DECLARE @EXPECTED NVARCHAR(256)
 DECLARE @response NVARCHAR(256)
+DECLARE @test_num INT = 1
+
+PRINT 'TESTING USER STORED PROCEDURE uspGivePersonnelPermission'
+PRINT 'BEGINNING TEST...'
 -- ============================================================================
 -- TEST 1
 -- give valid @username a valid permission with valid @auth
@@ -26,13 +30,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'personnel',
 	@auth = N'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 1 SUCCESSFUL' AS test_output
-ELSE
+IF (@response NOT LIKE @EXPECTED)
 BEGIN
-	SELECT @response AS response
-	SELECT 'uspGivePersonnelPermission TEST 1 FAILED' AS test_output
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
+SET @test_num = @test_num + 1
 
 -- delete the created permission to make sure test doesn't affect database
 EXEC dbo.uspDeletePersonnelPermission
@@ -70,13 +74,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'palettes',
 	@auth = N'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 2 SUCCESSFUL' AS test_output
-ELSE
+IF (@response NOT LIKE @EXPECTED)
 BEGIN
-	SELECT @response AS response
-	SELECT 'uspGivePersonnelPermission TEST 2 FAILED' AS test_output
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
+SET @test_num = @test_num + 1
 
 EXEC dbo.uspDeletePersonnelPermission
 	@username= 'hoa',
@@ -113,13 +117,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'rows',
 	@auth = 'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 3 SUCCESSFUL' AS test_output
-ELSE
+IF (@response NOT LIKE @EXPECTED)
 BEGIN
-	SELECT @response AS response
-	SELECT 'uspGivePersonnelPermission TEST 3 FAILED' AS test_output
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -134,10 +138,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'rows',
 	@auth = N'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 4 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 4 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 
 EXEC dbo.uspDeletePersonnelPermission
 	@username= 'hoa',
@@ -174,10 +181,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'locations',
 	@auth = '123',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 5 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 5 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -192,10 +202,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'locations',
 	@auth = 'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 6 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 6 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -210,10 +223,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'locations',
 	@auth = 'hai',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 7 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 7 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -228,10 +244,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'location',
 	@auth = 'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 8 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 8 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -246,10 +265,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'location',
 	@auth = 'asdf',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 9 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 9 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -264,10 +286,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'location',
 	@auth = 'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 10 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 10 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -282,10 +307,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'location',
 	@auth = 'qwer',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 11 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 11 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -300,10 +328,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'rows',
 	@auth = 'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 12 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 12 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -318,10 +349,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'levels',
 	@auth = 'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 13 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 13 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -336,10 +370,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'fish',
 	@auth = 'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 14 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 14 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -354,10 +391,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'fruit',
 	@auth = 'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 15 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 15 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -372,10 +412,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'fish',
 	@auth = 'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 16 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 16 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -390,10 +433,13 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'cows',
 	@auth = 'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 17 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 17 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -408,13 +454,19 @@ EXEC dbo.uspGivePersonnelPermission
 	@object = N'personnel',
 	@auth = 'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspGivePersonnelPermission TEST 18 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspGivePersonnelPermission TEST 18 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspGivePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
+PRINT 'END TEST'
+PRINT 'FINISHED TESTING USER STORED PROCEDURE uspGivePersonnelPermission'
 
 -- delete all personnel used in this test to make sure that database in clean 
 -- don't need to make sure to delete leftover personnel permissions b/c the personnel_permissions table Cascades on delete of a personnel_id & permissions_id
 DELETE FROM [dbo].[personnel] WHERE username='hoa' 
+

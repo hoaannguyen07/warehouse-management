@@ -13,41 +13,59 @@ EXEC dbo.uspCreatePersonnel
 	@full_name = N'Hoa Nguyen',
 	@auth = N'test'
 
-DECLARE @EXPECTED NVARCHAR(256)
-DECLARE @response NVARCHAR(256)
-
 -- GIVE personnel_permissions PERMISSIONS TO @username=N'hoa' for this test (will be deleted after)
 INSERT INTO personnel_permissions(personnel_id, permissions_id) 
 VALUES(
-(SELECT TOP 1 id FROM dbo.personnel WHERE username=N'hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
-(SELECT TOP 1 id FROM dbo.permissions WHERE action='create' AND object='personnel_permissions'))
+(SELECT TOP 1 id FROM dbo.personnel WHERE username='hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
+(SELECT TOP 1 id FROM dbo.permissions 
+	WHERE action_id=(SELECT id FROM dbo.permission_actions WHERE action = 'create') 
+	AND object_id=(SELECT id FROM dbo.permission_objects WHERE object = 'personnel_permissions'))
+)
 
 INSERT INTO personnel_permissions(personnel_id, permissions_id) 
 VALUES(
-(SELECT TOP 1 id FROM dbo.personnel WHERE username=N'hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
-(SELECT TOP 1 id FROM dbo.permissions WHERE action='read' AND object='personnel_permissions'))
+(SELECT TOP 1 id FROM dbo.personnel WHERE username='hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
+(SELECT TOP 1 id FROM dbo.permissions 
+	WHERE action_id=(SELECT id FROM dbo.permission_actions WHERE action = 'read') 
+	AND object_id=(SELECT id FROM dbo.permission_objects WHERE object = 'personnel_permissions'))
+)
 
 INSERT INTO personnel_permissions(personnel_id, permissions_id) 
 VALUES(
-(SELECT TOP 1 id FROM dbo.personnel WHERE username=N'hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
-(SELECT TOP 1 id FROM dbo.permissions WHERE action='update' AND object='personnel_permissions'))
+(SELECT TOP 1 id FROM dbo.personnel WHERE username='hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
+(SELECT TOP 1 id FROM dbo.permissions 
+	WHERE action_id=(SELECT id FROM dbo.permission_actions WHERE action = 'update') 
+	AND object_id=(SELECT id FROM dbo.permission_objects WHERE object = 'personnel_permissions'))
+)
 
 INSERT INTO personnel_permissions(personnel_id, permissions_id) 
 VALUES(
-(SELECT TOP 1 id FROM dbo.personnel WHERE username=N'hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
-(SELECT TOP 1 id FROM dbo.permissions WHERE action='delete' AND object='personnel_permissions'))
+(SELECT TOP 1 id FROM dbo.personnel WHERE username='hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
+(SELECT TOP 1 id FROM dbo.permissions 
+	WHERE action_id=(SELECT id FROM dbo.permission_actions WHERE action = 'delete') 
+	AND object_id=(SELECT id FROM dbo.permission_objects WHERE object = 'personnel_permissions'))
+)
 
 
-SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
-FROM dbo.personnel_permissions
-INNER JOIN dbo.personnel
-ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
-INNER JOIN dbo.permissions
-ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-WHERE dbo.personnel.username = 'hoa'
+--SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
+--FROM dbo.personnel_permissions
+--INNER JOIN dbo.personnel
+--ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
+--INNER JOIN dbo.permissions
+--ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+--INNER JOIN dbo.permission_actions
+--ON dbo.permissions.action_id = dbo.permission_actions.id
+--INNER JOIN dbo.permission_objects
+--ON dbo.permissions.object_id = dbo.permission_objects.id
+--WHERE dbo.personnel.username = 'hoa' 
 
 
+DECLARE @EXPECTED NVARCHAR(256)
+DECLARE @response NVARCHAR(256)
+DECLARE @test_num INT = 1
 
+PRINT 'TESTING USER STORED PROCEDURE uspDeletePersonnelPermission'
+PRINT 'BEGINNING TEST...'
 -- ============================================================================
 -- TEST 1
 -- delete from invalid @username a valid permission with valid @auth
@@ -59,10 +77,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 1 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 1 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -77,10 +98,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'sup',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 2 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 2 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -95,10 +119,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 3 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 3 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -113,10 +140,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'chao',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 4 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 3 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -131,10 +161,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'tables',
 	@auth = N'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 5 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 5 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -149,10 +182,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'tables',
 	@auth = N'bonjour',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 6 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 6 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -167,10 +203,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'farm',
 	@auth = N'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 7 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 7 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -185,10 +224,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'farm',
 	@auth = N'konichiwa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 8 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 8 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -203,10 +245,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'test',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 9 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 9 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -221,10 +266,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'fun',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 10 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 10 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -239,10 +287,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'sigh',
 	@auth = N'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 11 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 11 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -257,10 +308,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'awesome',
 	@auth = N'fun',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 12 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 12 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -275,10 +329,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'hamster',
 	@auth = N'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 13 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 13 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -293,10 +350,13 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'building',
 	@auth = N'fun',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 14 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 14 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -311,15 +371,18 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 15 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 15 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
 -- ============================================================================
--- TEST 15
+-- TEST 16
 -- delete from valid @username a valid permission that @username doesn't have with invalid @auth
 -- EXPECTED OUTPUT = 'Personnel does not have this permission'
 SET @EXPECTED = '%Personnel does not have this permission%'
@@ -329,15 +392,18 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'chao',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 15 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 15 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
 -- ============================================================================
--- TEST 16
+-- TEST 17
 -- delete from valid @username a valid permission with invalid @auth
 -- EXPECTED OUTPUT = 'Unauthorized to delete permission'
 SET @EXPECTED = '%Unauthorized to delete permission%'
@@ -347,15 +413,18 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel_permissions',
 	@auth = N'asdf',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 16 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 16 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
 -- ============================================================================
--- TEST 17
+-- TEST 18
 -- delete from invalid @username a valid permission that @username doesn't have with valid @auth
 -- EXPECTED OUTPUT = 'Username does not exist'
 SET @EXPECTED = '%Username does not exist%'
@@ -365,15 +434,18 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 17 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 17 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
 -- ============================================================================
--- TEST 17
+-- TEST 19
 -- delete from valid @username an invalid permission (invalid @action) that @username doesn't have with valid @auth
 -- EXPECTED OUTPUT = 'Username does not exist'
 SET @EXPECTED = '%Permission does not exist%'
@@ -383,15 +455,18 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel',
 	@auth = N'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnelPermission TEST 17 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnelPermission TEST 17 FAILED' AS test_output
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
 -- ============================================================================
--- TEST 18
+-- TEST 20
 -- delete from valid @username a valid permission that the @username has with valid @auth
 -- EXPECTED OUTPUT = 'SUCCESS'
 SET @EXPECTED = '%SUCCESS%'
@@ -401,30 +476,32 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel_permissions',
 	@auth = N'test',
 	@response = @response OUTPUT
--- check if operation is SUCCESSFUL and and if the p
-IF (@response LIKE @EXPECTED AND 
-	NOT EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
+-- check if operation is SUCCESSFUL and and if the permission is truly deleted from the database
+IF (@response NOT LIKE @EXPECTED) 
+	OR EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
 			FROM dbo.personnel_permissions
 			INNER JOIN dbo.personnel
 			ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
 			INNER JOIN dbo.permissions
 			ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-			WHERE dbo.personnel.username = N'hoa' 
-			AND dbo.permissions.action = N'read' 
-			AND dbo.permissions.object = N'personnel_permissions'))
+			INNER JOIN dbo.permission_actions
+			ON dbo.permissions.action_id = dbo.permission_actions.id
+			INNER JOIN dbo.permission_objects
+			ON dbo.permissions.object_id = dbo.permission_objects.id
+			WHERE dbo.personnel.username = 'hoa'
+			AND dbo.permission_actions.action = 'read'
+			AND dbo.permission_objects.object = 'personnel_permissions')
 BEGIN
-	SELECT 'uspDeletePersonnelPermission TEST 18 SUCCESSFUL' AS test_output
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
-ELSE
-BEGIN
-	SELECT @response AS response
-	SELECT 'uspDeletePersonnelPermission TEST 18 FAILED' AS test_output
-END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
 -- ============================================================================
--- TEST 19
+-- TEST 21
 -- delete from valid @username a valid permission that the @username has with valid @auth
 -- EXPECTED OUTPUT = 'SUCCESS'
 SET @EXPECTED = '%SUCCESS%'
@@ -434,24 +511,43 @@ EXEC dbo.uspDeletePersonnelPermission
 	@object = N'personnel_permissions',
 	@auth = N'hoa',
 	@response = @response OUTPUT
-IF (@response LIKE @EXPECTED AND 
-	NOT EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permissions.action, dbo.permissions.object
+-- check if operation is SUCCESSFUL and and if the permission is truly deleted from the database
+IF (@response NOT LIKE @EXPECTED) 
+	OR EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
 			FROM dbo.personnel_permissions
 			INNER JOIN dbo.personnel
 			ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
 			INNER JOIN dbo.permissions
 			ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-			WHERE dbo.personnel.username = N'hoa' 
-			AND dbo.permissions.action = N'create' 
-			AND dbo.permissions.object = N'personnel_permissions'))
-	SELECT 'uspDeletePersonnelPermission TEST 19 SUCCESSFUL' AS test_output
-ELSE
+			INNER JOIN dbo.permission_actions
+			ON dbo.permissions.action_id = dbo.permission_actions.id
+			INNER JOIN dbo.permission_objects
+			ON dbo.permissions.object_id = dbo.permission_objects.id
+			WHERE dbo.personnel.username = 'hoa'
+			AND dbo.permission_actions.action = 'read'
+			AND dbo.permission_objects.object = 'personnel_permissions')
 BEGIN
-	SELECT @response AS response
-	SELECT 'uspDeletePersonnelPermission TEST 19 FAILED' AS test_output
+	PRINT CONCAT('uspDeletePersonnelPermission TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
+PRINT 'END TEST'
+PRINT 'FINISHED TESTING USER STORED PROCEDURE uspDeletePersonnelPermission'
+
+--SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
+--FROM dbo.personnel_permissions
+--INNER JOIN dbo.personnel
+--ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
+--INNER JOIN dbo.permissions
+--ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
+--INNER JOIN dbo.permission_actions
+--ON dbo.permissions.action_id = dbo.permission_actions.id
+--INNER JOIN dbo.permission_objects
+--ON dbo.permissions.object_id = dbo.permission_objects.id
+--WHERE dbo.personnel.username = 'hoa' 
 
 -- delete all personnel used in this test to make sure that database in clean 
 -- don't need to make sure to delete leftover personnel permissions b/c the personnel_permissions table Cascades on delete of a personnel_id & permissions_id

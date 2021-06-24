@@ -82,7 +82,7 @@ BEGIN
 											ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
 											INNER JOIN dbo.permission_actions
 											ON dbo.permissions.action_id = dbo.permission_actions.id
-											INNER JOIn dbo.permission_objects
+											INNER JOIN dbo.permission_objects
 											ON dbo.permissions.object_id = dbo.permission_objects.id
 											WHERE dbo.personnel.username = @username 
 											AND dbo.permission_actions.action = @action 

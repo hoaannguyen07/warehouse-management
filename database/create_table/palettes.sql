@@ -1,7 +1,7 @@
 USE [warehouse_management]
 GO
 
-/****** Object:  Table [dbo].[palettes]    Script Date: 6/14/2021 9:47:30 PM ******/
+/****** Object:  Table [dbo].[palettes]    Script Date: 6/23/2021 11:10:36 AM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -16,7 +16,7 @@ CREATE TABLE [dbo].[palettes](
 	[order_num] [nvarchar](50) NULL,
 	[order_date] [date] NULL,
 	[delivery_date] [date] NULL,
-	[type_name] [nvarchar](10) NULL,
+	[type_id] [uniqueidentifier] NULL,
 	[unit_mass] [int] NULL,
 	[amount] [int] NULL,
 	[total_mass] [int] NULL,
@@ -29,12 +29,11 @@ CREATE TABLE [dbo].[palettes](
  CONSTRAINT [PK_palettes_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [IX_palettes_id] UNIQUE NONCLUSTERED 
-(
-	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[palettes] ADD  CONSTRAINT [DF_palettes_type_id_1]  DEFAULT (NULL) FOR [type_id]
 GO
 
 ALTER TABLE [dbo].[palettes] ADD  CONSTRAINT [DF_palettes_is_empty]  DEFAULT ((1)) FOR [is_empty]
@@ -58,6 +57,15 @@ REFERENCES [dbo].[personnel] ([id])
 GO
 
 ALTER TABLE [dbo].[palettes] CHECK CONSTRAINT [FK_palettes_personnel_last_modified_by]
+GO
+
+ALTER TABLE [dbo].[palettes]  WITH CHECK ADD  CONSTRAINT [FK_palettes_types_type_id] FOREIGN KEY([type_id])
+REFERENCES [dbo].[types] ([id])
+ON UPDATE CASCADE
+ON DELETE SET NULL
+GO
+
+ALTER TABLE [dbo].[palettes] CHECK CONSTRAINT [FK_palettes_types_type_id]
 GO
 
 

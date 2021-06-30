@@ -10,9 +10,9 @@ GO
 --	@response nvarchar(256) = '' OUTPUT
 
 -- OUTPUT(S) (by precedence):
---		1. 'Username already exist' -> @username already exists in the database, can't duplicate usernames in this database
---		2. 'Unauthorized to create personnel' -> Authorizing username does not have the permission to insert into personnel
---		3. ERROR_MESSAGE() -> Something went wrong during the INSERT operation of the @username, @password, and @full_name
+--		1. ERROR: 'Username already exist' -> @username already exists in the database, can't duplicate usernames in this database
+--		2. ERROR: 'Unauthorized to create personnel' -> Authorizing username does not have the permission to insert into personnel
+--		3. ERROR: ERROR_MESSAGE() -> Something went wrong during the INSERT operation of the @username, @password, and @full_name
 --		3. 'SUCCESS' -> Successfully removed @username from the database (that personnel no longer exists)
 
 

@@ -6,7 +6,7 @@ GO
 --	@response nvarchar(256) = '' OUTPUT
 
 -- OUTPUT(S) (by precedence):
---		1. ERROR_MESSAGE() -> error occurred during the INSERT operation into the permissions table
+--		1. ERROR: ERROR_MESSAGE() -> error occurred during the INSERT operation into the permissions table
 --		1. 'SUCCESS' -> Successfully created all the possible permissions for this database (skipped creating the permissions that already exists)
 
 

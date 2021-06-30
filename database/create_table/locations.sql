@@ -1,7 +1,7 @@
 USE [warehouse_management]
 GO
 
-/****** Object:  Table [dbo].[locations]    Script Date: 6/14/2021 9:48:07 PM ******/
+/****** Object:  Table [dbo].[locations]    Script Date: 6/27/2021 1:35:55 AM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -57,7 +57,7 @@ GO
 
 ALTER TABLE [dbo].[locations]  WITH CHECK ADD  CONSTRAINT [FK_locations_palettes_palettes_id] FOREIGN KEY([palette_id])
 REFERENCES [dbo].[palettes] ([id])
-ON DELETE CASCADE
+ON DELETE SET NULL
 GO
 
 ALTER TABLE [dbo].[locations] CHECK CONSTRAINT [FK_locations_palettes_palettes_id]

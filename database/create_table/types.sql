@@ -1,7 +1,7 @@
 USE [warehouse_management]
 GO
 
-/****** Object:  Table [dbo].[types]    Script Date: 6/14/2021 9:47:21 PM ******/
+/****** Object:  Table [dbo].[types]    Script Date: 6/25/2021 11:52:45 AM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -16,7 +16,7 @@ CREATE TABLE [dbo].[types](
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [IX_types_name_unit] UNIQUE CLUSTERED 
+ CONSTRAINT [IX_types_name_unit] UNIQUE NONCLUSTERED 
 (
 	[name] ASC,
 	[unit] ASC

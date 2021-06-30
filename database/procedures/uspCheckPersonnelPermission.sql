@@ -8,10 +8,9 @@ GO
 --	@object NVARCHAR(30), -- name of table that the action is supposed to have power over
 --	@response NVARCHAR(3)='' OUTPUT
 
--- OUTPUT(S) (by precedence):
+-- OUTPUT(S) (by precedence) (SUCCESS WILL ALWAYS BE '0' BUT BE LOWEST ON THE PRECEDENCE LIST):
 --		1. 'NO' -> @username DOES NOT have the [@action-@object] permission
---		2. 'YES' -> @username DOES have the [@action-@object] permission
-
+--		0. 'YES' -> @username DOES have the [@action-@object] permission
 
 CREATE OR ALTER PROCEDURE [dbo].[uspCheckPersonnelPermission]
 	@username NVARCHAR(50), 
@@ -34,9 +33,14 @@ BEGIN
 				WHERE dbo.personnel.username = @username 
 				AND dbo.permission_actions.action = @action 
 				AND dbo.permission_objects.object = @object)
+	BEGIN
 		SET @response = 'YES'
-	ELSE
-		SET @response = 'NO'
+		RETURN (0)
+	END
+	
+
+	SET @response = 'NO'
+	RETURN (1)
 END
 GO
 

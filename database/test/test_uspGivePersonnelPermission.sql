@@ -5,7 +5,9 @@
 USE [warehouse_management]
 GO
 
+SET NOCOUNT ON
 DELETE FROM [dbo].[personnel] WHERE username='hoa'
+SET NOCOUNT OFF
 
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',

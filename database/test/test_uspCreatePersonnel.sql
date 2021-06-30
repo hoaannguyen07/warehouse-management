@@ -8,27 +8,29 @@ GO
 DELETE FROM [dbo].[personnel] WHERE username NOT IN ('test', 'hoaannguyen07')
 
 DECLARE @EXPECTED NVARCHAR(256)
-DECLARE @res NVARCHAR(256)
+DECLARE @response NVARCHAR(256)
+DECLARE @test_num INT = 1
 
-
+PRINT 'TESTING USER STORED PROCEDURE uspCreatePersonnel'
+PRINT 'BEGINNING TEST...'
 -- ============================================================================
 -- TEST 1
 -- Creating peronnel w/ correct authorization, correct & unique user information
 -- EXPECTED OUTPUT = 'SUCCESS'
-SET @EXPECTED = 'SUCCESS'
+SET @EXPECTED = '%SUCCESS%'
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'test',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED) OR NOT EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa')
 BEGIN
-	IF EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa')
-		SELECT 'uspCreatePersonnel TEST 1 SUCCESSFUL' AS test_output
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
-ELSE
-	SELECT 'uspCreatePersonnel TEST 1 FAILED' AS test_output
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -42,11 +44,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'binh123',
 	@full_name = N'Binh Nguyen',
 	@auth = N'hoa',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 2 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 2 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -60,11 +65,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'nhan123',
 	@full_name = N'Nhan Nguyen',
 	@auth = N'hello',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 3 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 3 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -78,11 +86,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'test',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 4 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 4 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -96,11 +107,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'hoa',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 5 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 5 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -114,11 +128,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'hello',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 6 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 6 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -132,11 +149,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'haibabon',
 	@full_name = N'i dont know',
 	@auth = N'test',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 7 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 7 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -150,11 +170,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'onetwothree',
 	@full_name = N'what to do',
 	@auth = N'hoa',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 8 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 8 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -168,11 +191,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'bonnamsau',
 	@full_name = N'abc',
 	@auth = N'hello',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 9 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 9 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -186,11 +212,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'i dont know',
 	@auth = N'test',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 10 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 10 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -204,11 +233,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'what to do',
 	@auth = N'hoa',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 11 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 11 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -222,11 +254,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'abc',
 	@auth = N'hello',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 12 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 12 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -240,14 +275,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'test',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED) OR NOT EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa1')
 BEGIN
-	IF EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa')
-		SELECT 'uspCreatePersonnel TEST 13 SUCCESSFUL' AS test_output
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
-ELSE
-	SELECT 'uspCreatePersonnel TEST 13 FAILED' AS test_output
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -261,14 +296,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'123hoa',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'test',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED) OR NOT EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa2')
 BEGIN
-	IF EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa')
-		SELECT 'uspCreatePersonnel TEST 14 SUCCESSFUL' AS test_output
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
-ELSE
-	SELECT 'uspCreatePersonnel TEST 14 FAILED' AS test_output
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -282,11 +317,14 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa123',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'hoa',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 15 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 15 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -300,13 +338,22 @@ EXEC dbo.uspCreatePersonnel
 	@password = N'hoa1234',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'hello',
-	@response = @res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspCreatePersonnel TEST 16 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspCreatePersonnel TEST 16 FAILED' AS test_output
+	@response = @response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspCreatePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
-SELECT * FROM [dbo].[personnel]
+--SELECT * FROM [dbo].[personnel]
 
-DELETE FROM [dbo].[personnel] WHERE username LIKE 'hoa_' OR username='hoa'
+PRINT 'END TEST'
+PRINT 'FINISHED TESTING USER STORED PROCEDURE uspCreatePersonnel'
+
+DELETE FROM [dbo].[personnel] WHERE username='hoa' OR username='hoa1' OR username='hoa2' OR username='hoa3' OR username='hoa4' OR username='nhan' OR username='binh'
+
+IF EXISTS (SELECT 1 FROM dbo.personnel WHERE username='hoa' OR username='hoa1' OR username='hoa2' OR username='hoa3' OR username='hoa4' OR username='nhan' OR username='binh')
+	PRINT 'Unable to fully erase everything created in the uspCreatePersonnel Test'

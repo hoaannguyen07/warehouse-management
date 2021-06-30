@@ -5,7 +5,9 @@
 USE [warehouse_management]
 GO
 
+SET NOCOUNT ON
 DELETE FROM [dbo].[personnel] WHERE username='hoa'
+SET NOCOUNT OFF
 
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
@@ -14,6 +16,7 @@ EXEC dbo.uspCreatePersonnel
 	@auth = N'test'
 
 -- GIVE personnel_permissions PERMISSIONS TO @username=N'hoa' for this test (will be deleted after)
+SET NOCOUNT ON
 INSERT INTO personnel_permissions(personnel_id, permissions_id) 
 VALUES(
 (SELECT TOP 1 id FROM dbo.personnel WHERE username='hoa' AND password_hash=HASHBYTES('SHA2_512', N'hoa123')),
@@ -45,7 +48,7 @@ VALUES(
 	WHERE action_id=(SELECT id FROM dbo.permission_actions WHERE action = 'delete') 
 	AND object_id=(SELECT id FROM dbo.permission_objects WHERE object = 'personnel_permissions'))
 )
-
+SET NOCOUNT OFF
 
 --SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
 --FROM dbo.personnel_permissions

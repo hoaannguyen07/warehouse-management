@@ -7,7 +7,7 @@ GO
 --	@password nvarchar(50) -- @password of corresponding username
 
 -- OUTPUT(S) (by precedence):
---		1. 'Incorrect Username/Password' -> incorrect username or password; was not differentiated into individual 'Incorrect Username' & 'Incorrect Password' for security reasons
+--		1. ERROR: 'Incorrect Username/Password' -> incorrect username or password; was not differentiated into individual 'Incorrect Username' & 'Incorrect Password' for security reasons
 --		2. 'Successful Login' -> matching @username & @password in the database
 
 

@@ -10,11 +10,11 @@ GO
 --	@response nvarchar(256) = '' OUTPUT
 
 -- OUTPUT(S) (by precedence):
---		1. 'Username does not exist' -> @username is not a valid username in the database
---		2. 'Permission does not exist' -> [@action-@object] permission does not exist in the database
---		3. 'Personnel does not have this permission' -> @username does not have the [@action-@object] permission to begin with
---		4. 'Unauthorized to delete permission' -> @auth does not have the permission to perform this action 
---		5. ERROR_MESSAGE() -> error occurred during the DELETE operation of the personnel permission
+--		1. ERROR: 'Username does not exist' -> @username is not a valid username in the database
+--		2. ERROR: 'Permission does not exist' -> [@action-@object] permission does not exist in the database
+--		3. ERROR: 'Personnel does not have this permission' -> @username does not have the [@action-@object] permission to begin with
+--		4. ERROR: 'Unauthorized to delete permission' -> @auth does not have the permission to perform this action 
+--		5. ERROR: ERROR_MESSAGE() -> error occurred during the DELETE operation of the personnel permission
 --		5. 'SUCCESS' -> Successfully removed the [@action-@object] from @username on the personnel_permissions table
 
 
@@ -39,19 +39,16 @@ BEGIN
 					AND dbo.permission_objects.object = @object)
 		BEGIN
 				-- only delete permission from @username if @username has the [@action-@object] permission in the first place
-				IF EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
-							FROM dbo.personnel_permissions
-							INNER JOIN dbo.personnel
-							ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
-							INNER JOIN dbo.permissions
-							ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-							INNER JOIN dbo.permission_actions
-							ON dbo.permissions.action_id = dbo.permission_actions.id
-							INNER JOIn dbo.permission_objects
-							ON dbo.permissions.object_id = dbo.permission_objects.id
-							WHERE dbo.personnel.username = @username 
-							AND dbo.permission_actions.action = @action 
-							AND dbo.permission_objects.object = @object)
+				DECLARE @personnel_has_permission_response nvarchar(3)
+
+				EXEC dbo.uspCheckPersonnelPermission
+					@username = @username,
+					@action = @action,
+					@object = @object,
+					@response = @personnel_has_permission_response OUTPUT
+
+
+				IF (@personnel_has_permission_response = 'YES')
 				BEGIN
 						-- check if @auth has the authority to create personnel
 						DECLARE @check_permissions_response nvarchar(3)
@@ -73,19 +70,13 @@ BEGIN
 												AND object_id=(SELECT id FROM dbo.permission_objects WHERE object = @object))
 
 								-- have to make sure permission is deleted from the database (in case no severe errors raised to push into CATCH block but database did not record properly)
-								IF NOT EXISTS (SELECT dbo.personnel.username, dbo.personnel.full_name, dbo.permission_actions.action, dbo.permission_objects.object
-												FROM dbo.personnel_permissions
-												INNER JOIN dbo.personnel
-												ON dbo.personnel_permissions.personnel_id = dbo.personnel.id
-												INNER JOIN dbo.permissions
-												ON dbo.personnel_permissions.permissions_id = dbo.permissions.id
-												INNER JOIN dbo.permission_actions
-												ON dbo.permissions.action_id = dbo.permission_actions.id
-												INNER JOIn dbo.permission_objects
-												ON dbo.permissions.object_id = dbo.permission_objects.id
-												WHERE dbo.personnel.username = @username 
-												AND dbo.permission_actions.action = @action 
-												AND dbo.permission_objects.object = @object)
+								EXEC dbo.uspCheckPersonnelPermission
+									@username = @username,
+									@action = @action,
+									@object = @object,
+									@response = @personnel_has_permission_response OUTPUT
+
+								IF (@personnel_has_permission_response = 'NO')
 								BEGIN
 									SET @delete_personnel_permission_response = 'SUCCESS'
 								END

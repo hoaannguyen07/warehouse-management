@@ -5,17 +5,22 @@
 USE [warehouse_management]
 GO
 
+SET NOCOUNT ON
 DELETE FROM [dbo].[personnel] WHERE username NOT IN ('test', 'hoaannguyen07')
+SET NOCOUNT OFF
 
 DECLARE @EXPECTED NVARCHAR(256)
-DECLARE @res NVARCHAR(256)
-
+DECLARE @response NVARCHAR(256)
+DECLARE @test_num INT = 1
 
 EXEC dbo.uspCreatePersonnel
 	@username = N'hoa',
 	@password = N'hoa123',
 	@full_name = N'Hoa Nguyen',
 	@auth = N'test'
+
+PRINT 'TESTING USER STORED PROCEDURE uspDeletePersonnel'
+PRINT 'BEGINNING TEST...'
 -- ============================================================================
 -- TEST 1
 -- Delete personnel w/ incorrect auth, correct username, auth in personnel
@@ -24,11 +29,14 @@ SET @EXPECTED = '%Unauthorized to delete personnel%'
 EXEC dbo.uspDeletePersonnel
 	@username=N'hoa',
 	@auth='hoa',
-	@response=@res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnel TEST 1 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnel TEST 1 FAILED' AS test_output
+	@response=@response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -40,11 +48,14 @@ SET @EXPECTED = '%Unauthorized to delete personnel%'
 EXEC dbo.uspDeletePersonnel
 	@username=N'hoa',
 	@auth='holla',
-	@response=@res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnel TEST 2 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnel TEST 2 FAILED' AS test_output
+	@response=@response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -56,11 +67,14 @@ SET @EXPECTED = '%Username does not exist%'
 EXEC dbo.uspDeletePersonnel
 	@username=N'asdfjk',
 	@auth='hoa',
-	@response=@res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnel TEST 3 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnel TEST 3 FAILED' AS test_output
+	@response=@response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -72,11 +86,14 @@ SET @EXPECTED = '%Username does not exist%'
 EXEC dbo.uspDeletePersonnel
 	@username=N'asdfjk',
 	@auth='hoa',
-	@response=@res OUTPUT
-IF (@res LIKE @EXPECTED)
-	SELECT 'uspDeletePersonnel TEST 4 SUCCESSFUL' AS test_output
-ELSE
-	SELECT 'uspDeletePersonnel TEST 4 FAILED' AS test_output
+	@response=@response OUTPUT
+IF (@response NOT LIKE @EXPECTED)
+BEGIN
+	PRINT CONCAT('uspDeletePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
+END
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -88,14 +105,14 @@ SET @EXPECTED = '%Username does not exist%'
 EXEC dbo.uspDeletePersonnel
 	@username=N'asdfjk',
 	@auth='test',
-	@response=@res OUTPUT
-IF (@res LIKE @EXPECTED)
-BEGIN	
-	IF NOT EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'asdfjk')
-		SELECT 'uspDeletePersonnel TEST 5 SUCCESSFUL' AS test_output
+	@response=@response OUTPUT
+IF (@response NOT LIKE @EXPECTED) OR EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'asdfjk')
+BEGIN
+	PRINT CONCAT('uspDeletePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
-ELSE
-	SELECT 'uspDeletePersonnel TEST 5 FAILED' AS test_output
+SET @test_num = @test_num + 1
 -- ============================================================================
 
 
@@ -107,17 +124,20 @@ SET @EXPECTED = '%SUCCESS%'
 EXEC dbo.uspDeletePersonnel
 	@username=N'hoa',
 	@auth='test',
-	@response=@res OUTPUT
-IF (@res LIKE @EXPECTED)
-BEGIN	
-	IF NOT EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa')
-		SELECT 'uspDeletePersonnel TEST 6 SUCCESSFUL' AS test_output
+	@response=@response OUTPUT
+IF (@response NOT LIKE @EXPECTED) OR EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=N'hoa')
+BEGIN
+	PRINT CONCAT('uspDeletePersonnel TEST ', @test_num,' FAILED')
+	PRINT CONCAT('Expected: ', @EXPECTED)
+	PRINT CONCAT('Result: ', @response)
 END
-ELSE
-	SELECT 'uspDeletePersonnel TEST 6 FAILED' AS test_output
+SET @test_num = @test_num + 1
 -- ============================================================================
 
-DELETE FROM [dbo].[personnel] WHERE username=N'hoa'
+PRINT 'END TEST'
+PRINT 'FINISHED TESTING USER STORED PROCEDURE uspDeletePersonnel'
 
+DELETE FROM [dbo].[personnel] WHERE username IN ('hoa', 'asdfjk')
 
-DELETE FROM [dbo].[personnel] WHERE username NOT IN ('test', 'hoaannguyen07')
+IF EXISTS (SELECT 1 FROM dbo.personnel WHERE username IN ('hoa', 'asdfjk'))
+	PRINT 'Unable to fully erase everything created in the uspDeletePersonnel Test'

@@ -8,9 +8,9 @@ GO
 --	@response nvarchar(256) = '' OUTPUT
 
 -- OUTPUT(S) (by precedence):
---		1. 'Username does not exist' -> The input username does not exist in the personnel table
---		2. 'Unauthorized to delete personnel' -> Authorizing username does not have the permission to insert into personnel
---		3. ERROR_MESSAGE() -> Something went wrong during the DELETE operation of the @username
+--		1. ERROR: 'Username does not exist' -> The input username does not exist in the personnel table
+--		2. ERROR: 'Unauthorized to delete personnel' -> Authorizing username does not have the permission to insert into personnel
+--		3. ERROR: ERROR_MESSAGE() -> Something went wrong during the DELETE operation of the @username
 --		3. 'SUCCESS' -> Successfully removed @username from the database (that personnel no longer exists)
 
 

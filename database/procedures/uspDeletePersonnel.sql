@@ -31,14 +31,13 @@ BEGIN
 	END
 
 
-	-- check if @auth has the authority to create personnel
+	-- check if @auth has the authority to delete personnel
 	DECLARE @check_permissions_response nvarchar(3)
 	EXEC dbo.uspCheckPersonnelPermission
 		@username = @auth,
 		@action = 'delete',
 		@object = 'personnel',
 		@response = @check_permissions_response OUTPUT
-
 	IF (@check_permissions_response = 'NO')
 	BEGIN
 		SET @response = 'Unauthorized to delete personnel'

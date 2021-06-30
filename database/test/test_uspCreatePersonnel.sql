@@ -5,7 +5,9 @@
 USE [warehouse_management]
 GO
 
+SET NOCOUNT ON
 DELETE FROM [dbo].[personnel] WHERE username NOT IN ('test', 'hoaannguyen07')
+SEt NOCOUNT OFF
 
 DECLARE @EXPECTED NVARCHAR(256)
 DECLARE @response NVARCHAR(256)
@@ -353,7 +355,9 @@ SET @test_num = @test_num + 1
 PRINT 'END TEST'
 PRINT 'FINISHED TESTING USER STORED PROCEDURE uspCreatePersonnel'
 
+SET NOCOUNT ON
 DELETE FROM [dbo].[personnel] WHERE username='hoa' OR username='hoa1' OR username='hoa2' OR username='hoa3' OR username='hoa4' OR username='nhan' OR username='binh'
+SET NOCOUNT OFF
 
 IF EXISTS (SELECT 1 FROM dbo.personnel WHERE username='hoa' OR username='hoa1' OR username='hoa2' OR username='hoa3' OR username='hoa4' OR username='nhan' OR username='binh')
 	PRINT 'Unable to fully erase everything created in the uspCreatePersonnel Test'

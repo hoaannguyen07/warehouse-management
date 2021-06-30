@@ -16,7 +16,7 @@ CREATE OR ALTER PROCEDURE [dbo].[uspCheckPersonnelPermission]
 	@username NVARCHAR(50), 
 	@action NVARCHAR(10), 
 	@object NVARCHAR(30),
-	@response NVARCHAR(3)='' OUTPUT
+	@response NVARCHAR(3)= NULL OUTPUT
 AS
 BEGIN
 	-- create response based on if an entry that relates @user to [@action-@object] exists in the table

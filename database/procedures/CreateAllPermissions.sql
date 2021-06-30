@@ -11,12 +11,12 @@ GO
 
 
 CREATE OR ALTER PROCEDURE [dbo].[uspCreateAllPermissions]
-	@response nvarchar(256) = '' OUTPUT
+	@response nvarchar(256) = NULL OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON
 
-	DECLARE @create_all_permissions_response nvarchar(256) = NULL
+	--DECLARE @create_all_permissions_response nvarchar(256) = NULL
 	DECLARE @error binary(1) = 0
 
 	DECLARE @NumOfPermissions INT = 0
@@ -49,8 +49,8 @@ BEGIN
 				END TRY
 				BEGIN CATCH
 					SET @error = 1
-					SET @create_all_permissions_response = ERROR_MESSAGE()
-					BREAK
+					SET @response = ERROR_MESSAGE()
+					RETURN 1
 				END CATCH
 			END
 
@@ -66,12 +66,9 @@ BEGIN
 	END
 
 	-- in case no error has occurred and @create_all_permissions_response hasn't been filled out with another statement, the run was successful
-	IF (@error = 0 AND @create_all_permissions_response IS NULL)
-		SET @create_all_permissions_response = 'SUCCESS'
+	IF (@error = 0 AND @response IS NULL)
+		SET @response = 'SUCCESS'
 
-	SET @response = @create_all_permissions_response
-	--SELECT @response as response
-
-	--PRINT CONCAT('Number of permissions available: ', @NumOfPermissions)
+	RETURN (0)
 END
 

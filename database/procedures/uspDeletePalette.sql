@@ -9,67 +9,62 @@ GO
 
 -- OUTPUT(S) (by precedence):
 --		1. ERROR: 'Palette ID does not exist' -> palette id does not exist in the database; cannot delete a non-existent palette
---		2. ERROR: 'Unauthorized to create palettes' -> @auth does not have the permission to create palettes
+--		2. ERROR: 'Unauthorized to delete palettes' -> @auth does not have the permission to delete palettes
 --		3. ERROR: ERROR_MESSAGE() -> something went wrong during the DELETE operation of the palette from the database (unforseen error that wasn't checked for beforehand)
+--		4. ERROR: 'Error occurred during the DELETE operation' -> something went wrong during the DELETE operation from the palettes table but did not cause any errors (or it would've returned ERROR_MESSAGE() instead)
 --		4. 'SUCCESS' -> successfully inserted the new palette into database (initialize nullable attributes to null, which could be updated using the "update palette" procedure)
+
 
 CREATE OR ALTER PROCEDURE [dbo].[uspDeletePalette]
 	@palette_id nvarchar(10),
 	@auth nvarchar(50),
-	@response nvarchar(256) = '' OUTPUT
+	@response nvarchar(256) = NULL OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON
 
-	DECLARE @create_palette_response nvarchar(256) = NULL
-
-	-- make sure that palette id is in the system
-	IF EXISTS (SELECT id FROM dbo.palettes WHERE id = @palette_id)
+	-- make sure that palette id is in the system (can't delete a nonexistent palette)
+	IF NOT EXISTS (SELECT id FROM dbo.palettes WHERE id = @palette_id)
 	BEGIN
-		-- check authorization
-		DECLARE @authorization_response nvarchar(3)
+		SET @response = 'Palette ID does not exist'
+		RETURN (1)
+	END 
 
-		EXEC dbo.uspCheckPersonnelPermission
-			@username = @auth,
-			@action = 'delete',
-			@object = 'palettes',
-			@response = @authorization_response OUTPUT
 
-		-- make sure @auth has the authorization to delete palettes
-		IF (@authorization_response = 'YES')
-		BEGIN
-			BEGIN TRY
-				DELETE TOP (1) FROM dbo.palettes WHERE id = @palette_id
+	-- check authorization
+	DECLARE @authorization_response nvarchar(3)
 
-				-- make sure the palette doesn't exist in the database anymore
-				IF NOT EXISTS (SELECT 1 FROM dbo.palettes WHERE id = @palette_id AND created_by = @auth)
-					SET @create_palette_response = 'SUCCESS'
-				ELSE
-				BEGIN
-					DECLARE @message nvarchar(256) = NULL
-					SET @message = CONCAT('The DELETE operation was unable to remove the palette ', @palette_id, ' from the database')
+	EXEC dbo.uspCheckPersonnelPermission
+		@username = @auth,
+		@action = 'delete',
+		@object = 'palettes',
+		@response = @authorization_response OUTPUT
 
-					RAISERROR(
-						@message, -- Message
-						16, -- Severity
-						1 -- State
-					)
-				END
-			END TRY
-			BEGIN CATCH
-				SET @create_palette_response = ERROR_MESSAGE()
-			END CATCH
-		END
-		ELSE
-		BEGIN
-			SET @create_palette_response = 'Unauthorized to delete palettes'
-		END
-	END
-	ELSE
+	-- make sure @auth has the authorization to delete palettes to continue
+	IF (@authorization_response = 'NO')
 	BEGIN
-		SET @create_palette_response = 'Palette ID does not exist'
+		SET @response = 'Unauthorized to delete palettes'
+		RETURN (2)
 	END
 
-	SET @response = @create_palette_response
-	--SELECT @response AS response
+	-- all verifications have been made so starting deleting from the db
+	BEGIN TRY
+		DELETE TOP (1) FROM dbo.palettes WHERE id = @palette_id
+	END TRY
+	BEGIN CATCH
+		SET @response = ERROR_MESSAGE()
+		RETURN (3)
+	END CATCH
+
+
+	-- make sure the palette doesn't exist in the database anymore
+	IF EXISTS (SELECT 1 FROM dbo.palettes WHERE id = @palette_id AND created_by = @auth)
+	BEGIN
+		SET @response = 'Error occurred during the DELETE operation'
+		RETURN (4)
+	END
+	
+	-- palette guarenteed to not exist in the db anymore so return successful
+	SET @response = 'SUCCESS'
+	RETURN (0)
 END

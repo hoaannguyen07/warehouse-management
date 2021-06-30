@@ -8,7 +8,7 @@ GO
 --	@auth nvarchar(50), --username of the person requesting this personnel update
 --	@response nvarchar(256) = '' OUTPUT
 
--- OUTPUT(S) (by precedence):
+-- OUTPUT(S) (by precedence) (SUCCESS WILL ALWAYS BE '0' BUT BE LOWEST ON THE PRECEDENCE LIST):
 --		1. ERROR: 'Username does not exist' -> username does not exist in the database in the first place, so he is not a personnel
 --		2. ERROR: 'Unauthorized to update passwords' -> @auth does not have the authorization to update passwords in the database
 --		3. ERROR: ERROR_MESSAGE() -> error occurred during the updating of the password (unforseen & unhandled error)
@@ -49,7 +49,7 @@ BEGIN
 	END
 
 
-	-- all verifications have been made so starting inserting into the db
+	-- all verifications have been made so starting updating personnel info in the db
 	BEGIN TRY
 		-- because usernames are unique in the db, can make sure that only this personnel's password will be changed
 		UPDATE dbo.personnel

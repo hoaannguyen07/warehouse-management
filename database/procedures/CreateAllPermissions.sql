@@ -67,8 +67,13 @@ BEGIN
 
 	-- in case no error has occurred and @create_all_permissions_response hasn't been filled out with another statement, the run was successful
 	IF (@error = 0 AND @response IS NULL)
+	BEGIN
 		SET @response = 'SUCCESS'
+		RETURN (0)
+	END
 
-	RETURN (0)
+	-- since @error = 0 or @reponse is still null, an error must have occurred during the INSERT operation
+	SET @response = 'Error occurred during the INSERT operation'
+	RETURN (7)
 END
 

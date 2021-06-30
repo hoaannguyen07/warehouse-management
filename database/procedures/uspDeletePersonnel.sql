@@ -53,13 +53,14 @@ BEGIN
 		SET @response = ERROR_MESSAGE()
 	END CATCH
 
-	IF EXISTS(SELECT id FROM dbo.personnel WHERE username=@username)
+	IF NOT EXISTS(SELECT id FROM dbo.personnel WHERE username=@username)
 	BEGIN
-		SET @response = 'Error occurred during the DELETE operation'
-		RETURN (4)
+		-- personnel guarenteed to not exist in the db anymore so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 
-	-- personnel guarenteed to not exist in the db anymore so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+	-- able to still find personnel in db so something went wrong during the DELETE operation
+	SET @response = 'Error occurred during the DELETE operation'
+	RETURN (4)
 END

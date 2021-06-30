@@ -137,7 +137,9 @@ SET @test_num = @test_num + 1
 PRINT 'END TEST'
 PRINT 'FINISHED TESTING USER STORED PROCEDURE uspDeletePersonnel'
 
+SET NOCOUNT ON
 DELETE FROM [dbo].[personnel] WHERE username IN ('hoa', 'asdfjk')
+SET NOCOUNT OFF
 
 IF EXISTS (SELECT 1 FROM dbo.personnel WHERE username IN ('hoa', 'asdfjk'))
 	PRINT 'Unable to fully erase everything created in the uspDeletePersonnel Test'

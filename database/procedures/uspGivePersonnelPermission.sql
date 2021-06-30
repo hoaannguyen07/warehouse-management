@@ -103,15 +103,18 @@ BEGIN
 		@object = @object,
 		@response = @personnel_has_permission_response OUTPUT
 
-	IF (@personnel_has_permission_response = 'NO')
+	IF (@personnel_has_permission_response = 'YES')
 	BEGIN
-		SET @response = 'Error occurred during the INSERT operation'
-		RETURN (6)
+		-- personnel has been given a new permisson so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
+		
 	END
 
-	-- personnel has been given a new permisson so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+
+	-- personnel still does not have the permission [@action-@object] so something went wrong during the INSERT operation
+	SET @response = 'Error occurred during the INSERT operation'
+	RETURN (6)
 END
 GO
 

@@ -60,13 +60,15 @@ BEGIN
 
 
 	-- check if type was actually deleted from the db or not
-	IF EXISTS (SELECT id FROM dbo.types WHERE name=@unit AND unit=@unit)
+	IF NOT EXISTS (SELECT id FROM dbo.types WHERE name=@unit AND unit=@unit)
 	BEGIN
-		SET @response = 'Error occurred during the DELETE operation'
-		RETURN (4)
+		-- type guarenteed to not exist in the db anymore so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
+		
 	END
 	
-	-- type guarenteed to not exist in the db anymore so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+	-- able to still find type in db so something went wrong during the DELETE operation
+	SET @response = 'Error occurred during the DELETE operation'
+	RETURN (4)
 END

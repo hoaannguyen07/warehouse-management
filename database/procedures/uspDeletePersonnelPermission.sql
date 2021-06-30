@@ -100,16 +100,17 @@ BEGIN
 		@object = @object,
 		@response = @personnel_has_permission_response OUTPUT
 
-	IF (@personnel_has_permission_response = 'YES')
+	IF (@personnel_has_permission_response = 'NO')
 	BEGIN
-		SET @response = 'Error occurred during the DELETE operation'
-		RETURN (6)
+		-- personnel guarenteed to not have permission[@action-@object] in the db anymore so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 	
 
-	-- personnel guarenteed to not have permission[@action-@object] in the db anymore so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+	-- able to still determine that the personnel still has permission [@action-@object] so something went wrong during the DELETE operation
+	SET @response = 'Error occurred during the DELETE operation'
+	RETURN (6)
 END
 GO
 

@@ -84,7 +84,7 @@ BEGIN
 	END CATCH
 
 	-- check if the location has really been added into the db
-	IF NOT EXISTS (
+	IF EXISTS (
 		SELECT 1 FROM dbo.locations
 		WHERE row_id = @row_id
 		AND column_id = @column_id
@@ -92,12 +92,14 @@ BEGIN
 		AND created_by = (SELECT id FROM dbo.personnel WHERE username = @auth)
 	)
 	BEGIN
-		SET @response = 'Error occurred during the INSERT operation'
-		RETURN (7)
+		-- new location exists so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 
-	-- new location exists so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+
+	-- unable to find new location in db so something went wrong during the INSERT operation
+	SET @response = 'Error occurred during the INSERT operation'
+	RETURN (7)
 END
 

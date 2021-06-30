@@ -59,13 +59,14 @@ BEGIN
 	END CATCH
 
 	-- check if new personnel really exists in the db
-	IF NOT EXISTS(SELECT id FROM dbo.personnel WHERE username=@username)
+	IF EXISTS(SELECT id FROM dbo.personnel WHERE username=@username)
 	BEGIN
-		SET @response = 'Error occurred during the INSERT operation'
-		RETURN (4)
+		-- new personnel is guarenteed to be in the db so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 	
-	-- new personnel is guarenteed to be in the db so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+	-- unable to find new personnel in db so something went wrong during the INSERT operation
+	SET @response = 'Error occurred during the INSERT operation'
+	RETURN (4)
 END

@@ -58,13 +58,14 @@ BEGIN
 
 
 	-- make sure the palette doesn't exist in the database anymore
-	IF EXISTS (SELECT 1 FROM dbo.palettes WHERE id = @palette_id AND created_by = @auth)
+	IF NOT EXISTS (SELECT 1 FROM dbo.palettes WHERE id = @palette_id AND created_by = @auth)
 	BEGIN
-		SET @response = 'Error occurred during the DELETE operation'
-		RETURN (4)
+		-- palette guarenteed to not exist in the db anymore so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 	
-	-- palette guarenteed to not exist in the db anymore so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+	-- able to still find palette in db so something went wrong during the DELETE operation
+	SET @response = 'Error occurred during the DELETE operation'
+	RETURN (4)
 END

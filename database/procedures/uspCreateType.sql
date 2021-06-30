@@ -58,13 +58,14 @@ BEGIN
 
 
 	-- check if new type now exists in db or not
-	IF NOT EXISTS (SELECT id FROM dbo.types WHERE name = @name AND unit = @unit)
+	IF EXISTS (SELECT id FROM dbo.types WHERE name = @name AND unit = @unit)
 	BEGIN
-		SET @response = 'Error occurred during the INSERT operation'
-		RETURN (4)
+		-- new type is guarenteed to be in the db so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 	
-	-- new type is guarenteed to be in the db so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+	-- unable to find new type in db so something went wrong during the INSERT operation
+	SET @response = 'Error occurred during the INSERT operation'
+	RETURN (4)
 END

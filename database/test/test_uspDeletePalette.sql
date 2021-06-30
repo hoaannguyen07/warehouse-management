@@ -170,7 +170,9 @@ PRINT 'END TEST'
 PRINT 'FINISHED TESTING USER STORED PROCEDURE uspDeletePalette'
 
 
-
+SET NOCOUNT ON
 DELETE FROM dbo.palettes WHERE id IN ('SA001', 'SA002', 'SA003', 'SA004')
+SET NOCOUNT OFF
+
 IF EXISTS (SELECT id FROM dbo.palettes)
 	PRINT 'Unable to clear all data used to test uspCreatePalette'

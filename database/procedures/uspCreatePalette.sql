@@ -62,13 +62,15 @@ BEGIN
 
 
 	-- make sure that the palette now exists in the database
-	IF NOT EXISTS (SELECT id FROM dbo.palettes WHERE id = @palette_id AND created_by = (SELECT id FROM dbo.personnel WHERE username=@auth))
+	IF EXISTS (SELECT id FROM dbo.palettes WHERE id = @palette_id AND created_by = (SELECT id FROM dbo.personnel WHERE username=@auth))
 	BEGIN
-		SET @response = 'Error occurred during the INSERT operation'
-		RETURN (4)
+		-- new palette guarenteed to exist so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 	
-	-- new palette guarenteed to exist so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+
+	-- unable to find new palette in db so something went wrong during the INSERT operation
+	SET @response = 'Error occurred during the INSERT operation'
+	RETURN (4)
 END

@@ -82,7 +82,7 @@ BEGIN
 
 
 	-- check if the location has really been added into the db
-	IF EXISTS (
+	IF NOT EXISTS (
 		SELECT 1 FROM dbo.locations
 		WHERE row_id = @row_id
 		AND column_id = @column_id
@@ -90,11 +90,12 @@ BEGIN
 		AND created_by = (SELECT id FROM dbo.personnel WHERE username = @auth)
 	)
 	BEGIN
-		SET @response = 'Error occurred during the DELETE operation'
-		RETURN (7)
+		-- location guarenteed to not exist in the db anymore so return successful
+		SET @response = 'SUCCESS'
+		RETURN (0)
 	END
 
-	-- location guarenteed to not exist in the db anymore so return successful
-	SET @response = 'SUCCESS'
-	RETURN (0)
+	-- able to still find location in db so something went wrong during the DELETE operation
+	SET @response = 'Error occurred during the DELETE operation'
+	RETURN (7)
 END

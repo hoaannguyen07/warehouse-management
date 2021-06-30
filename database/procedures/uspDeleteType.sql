@@ -7,71 +7,66 @@ GO
 --	@auth nvarchar(50), -- username of person who wants to delete type, used to verify that personnel has the permission to delete a type
 --	@response nvarchar(256) = '' OUTPUT
 
--- OUTPUT(S) (by precedence):
+-- OUTPUT(S) (by precedence) (SUCCESS WILL ALWAYS BE '0' BUT BE LOWEST ON THE PRECEDENCE LIST):
 --		1. ERROR: 'Type does not exist' -> the [@name-@unit] combo does not exist in the database in the first place
 --		2. ERROR: 'Unauthorized to delete types' -> @auth does not have the permission to delete types
 --		3. ERROR: ERROR_MESSAGE() -> something went wrong during the DELETE operation of the new type into the database (unforseen error that wasn't checked for beforehand)
---		4. 'SUCCESS' -> successfully delete type from db
+--		4. ERROR: 'Error occurred during the DELETE operation' -> something went wrong during the DELETE operation from the types table but did not cause any errors (or it would've returned ERROR_MESSAGE() instead)
+--		0. 'SUCCESS' -> successfully delete type from db
+
 
 CREATE OR ALTER PROCEDURE [dbo].[uspDeleteType]
 	@name nvarchar(10),
 	@unit nvarchar(10),
 	@auth nvarchar(50),
-	@response nvarchar(256) = '' OUTPUT
+	@response nvarchar(256) = NULL OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON
-
-	DECLARE @delete_type_response nvarchar(256) = NULL
-
-	-- check if [@name-@unit] combo is in the db already
-	IF EXISTS (SELECT id FROM dbo.types WHERE name = @name AND unit = @unit)
+	
+	-- check if [@name-@unit] combo is in the db to be deleted
+	IF NOT EXISTS (SELECT id FROM dbo.types WHERE name = @name AND unit = @unit)
 	BEGIN
-		-- check authorization
-		DECLARE @authorization_response nvarchar(3)
-
-		EXEC dbo.uspCheckPersonnelPermission
-			@username = @auth,
-			@action = 'delete',
-			@object = 'types',
-			@response = @authorization_response OUTPUT
-
-		-- make sure @auth has the authorization to delete types
-		IF (@authorization_response = 'YES')
-		BEGIN
-			BEGIN TRY
-				DELETE FROM dbo.types WHERE name = @name AND unit = @unit
-
-				-- check if type was actually deleted from the db or not
-				IF NOT EXISTS (SELECT id FROM dbo.types WHERE name=@unit AND unit=@unit)
-					SET @delete_type_response = 'SUCCESS'
-				ELSE
-				BEGIN
-					DECLARE @message nvarchar(256) = NULL
-					SET @message = CONCAT('The DELETE operation was unable to remove the type [name, unit] = [', @name, ', ', @unit, '] from the database')
-
-					RAISERROR(
-						@message, -- Message
-						16, -- Severity
-						1 -- State
-					)
-				END
-			END TRY
-			BEGIN CATCH
-				SET @delete_type_response = ERROR_MESSAGE()
-			END CATCH -- finish attempting to insert [@name-@unit] into db
-		END
-		ELSE
-		BEGIN
-			SET @delete_type_response = 'Unauthorized to delete types'
-		END -- finish checking authorization
+		SET @response = 'Type does not exist'
+		RETURN (1)
 	END
-	ELSE
+
+
+	-- check authorization
+	DECLARE @authorization_response nvarchar(3)
+	EXEC dbo.uspCheckPersonnelPermission
+		@username = @auth,
+		@action = 'delete',
+		@object = 'types',
+		@response = @authorization_response OUTPUT
+	-- make sure @auth has the authorization to delete types to continue
+	IF (@authorization_response = 'NO')
 	BEGIN
-		SET @delete_type_response = 'Type does not exist'
-	END -- finished checking if [@name-@unit] combo
+		SET @response = 'Unauthorized to delete types'
+		RETURN (2)
+	END
 
 
-	SET @response = @delete_type_response
-	--SELECT @response AS response
+	-- all verifications have been made so starting deleting from the db
+	BEGIN TRY
+		DELETE FROM dbo.types WHERE name = @name AND unit = @unit
+
+		
+	END TRY
+	BEGIN CATCH
+		SET @response = ERROR_MESSAGE()
+		RETURN (3)
+	END CATCH
+
+
+	-- check if type was actually deleted from the db or not
+	IF EXISTS (SELECT id FROM dbo.types WHERE name=@unit AND unit=@unit)
+	BEGIN
+		SET @response = 'Error occurred during the DELETE operation'
+		RETURN (4)
+	END
+	
+	-- type guarenteed to not exist in the db anymore so return successful
+	SET @response = 'SUCCESS'
+	RETURN (0)
 END

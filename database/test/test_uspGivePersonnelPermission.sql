@@ -470,5 +470,10 @@ PRINT 'FINISHED TESTING USER STORED PROCEDURE uspGivePersonnelPermission'
 
 -- delete all personnel used in this test to make sure that database in clean 
 -- don't need to make sure to delete leftover personnel permissions b/c the personnel_permissions table Cascades on delete of a personnel_id & permissions_id
+SET NOCOUNT ON
 DELETE FROM [dbo].[personnel] WHERE username='hoa' 
+SET NOCOUNT OFF
+
+IF EXISTS (SELECT id FROM dbo.personnel WHERE username = 'hoa')
+	PRINT 'Unable to fully erase everything created in the uspGivePersonnelPermission Test'
 

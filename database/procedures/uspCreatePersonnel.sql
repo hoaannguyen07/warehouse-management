@@ -27,6 +27,7 @@ AS
 BEGIN
 	SET NOCOUNT ON
 
+	-- check if @username is going to be unique in the db
 	IF EXISTS(SELECT dbo.personnel.id FROM dbo.personnel WHERE username=@username)
 	BEGIN
 		SET @response = 'Username already exists'

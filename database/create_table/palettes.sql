@@ -19,7 +19,7 @@ CREATE TABLE [dbo].[palettes](
 	[type_id] [uniqueidentifier] NULL,
 	[unit_mass] [int] NULL,
 	[amount] [int] NULL,
-	[total_mass] [int] NULL,
+	[total_mass] [int] NOT NULL,
 	[is_empty] [binary](1) NULL,
 	[last_modified] [datetime] NULL,
 	[last_modified_by] [uniqueidentifier] NULL,
@@ -34,6 +34,9 @@ CREATE TABLE [dbo].[palettes](
 GO
 
 ALTER TABLE [dbo].[palettes] ADD  CONSTRAINT [DF_palettes_type_id_1]  DEFAULT (NULL) FOR [type_id]
+GO
+
+ALTER TABLE [dbo].[palettes] ADD  CONSTRAINT [DF_palettes_total_mass]  DEFAULT (0) FOR [total_mass]
 GO
 
 ALTER TABLE [dbo].[palettes] ADD  CONSTRAINT [DF_palettes_is_empty]  DEFAULT ((1)) FOR [is_empty]

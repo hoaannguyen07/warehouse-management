@@ -15,9 +15,10 @@ GO
 --	@type_unit nvarchar(10), -- mass unit that the container uses (kg, lbs, etc.)
 --	@unit_mass int, -- mass of one of the products (mass of 1 bao)
 --	@amount int, -- number of products on the palette
+--	@total_mass int, -- total mass of the palette
 --	@being_delivered binary, -- status of the palette being in the warehouse or on the way to being delivered
 --	@auth nvarchar(50), -- username of the person requesting this palette update
---	@response nvarchar(256) = '' OUTPUT
+--	@response nvarchar(256) = NULL OUTPUT
 
 
 -- OUTPUT(S) (by precedence) (SUCCESS WILL ALWAYS BE '0' BUT BE LOWEST ON THE PRECEDENCE LIST):
@@ -45,6 +46,7 @@ CREATE OR ALTER PROCEDURE [dbo].[uspUpdatePaletteInformation]
 	@type_unit nvarchar(10),
 	@unit_mass int,
 	@amount int,
+	@total_mass int,
 	@being_delivered binary,
 	@auth nvarchar(50),
 	@response nvarchar(256) = NULL OUTPUT
@@ -53,7 +55,7 @@ BEGIN
 	SET NOCOUNT ON
 
 	-- check existence of palette id = @id
-	IF EXISTS (SELECT id FROM dbo.palettes WHERE id = @id)
+	IF NOT EXISTS (SELECT id FROM dbo.palettes WHERE id = @id)
 	BEGIN
 		SET @response = 'Palette ID does not exist'
 		RETURN (1)
@@ -64,6 +66,17 @@ BEGIN
 	DECLARE @converted_expiration_date date
 	DECLARE @converted_order_date date
 	DECLARE @converted_delivery_date date
+	-- since (SELECT CONVERT(date, '', 103)) returns '1900-01-01' instead of NULL, check for '' in the dates and change them to NULL
+	-- to avoid any potential errors
+	IF (@manufacturing_date = '')
+		SET @manufacturing_date = NULL
+	IF (@expiration_date = '')
+		SET @expiration_date = NULL
+	IF (@order_date = '')
+		SET @order_date = NULL
+	IF (@delivery_date = '')
+		SET @delivery_date = NULL
+
 
 	-- try converting manufacturing date to SQL preferred date
 	BEGIN TRY
@@ -127,6 +140,12 @@ BEGIN
 
 	-- all verifications have been made so starting updating palette info in the db
 	BEGIN TRY
+		-- first set NULL all the inputs that are '' to not add weight to the db unncessarily
+		IF (@product_name = '')
+			SET @product_name = NULL
+		IF (@order_num = '')
+			SET @order_num = NULL
+
 		UPDATE dbo.palettes
 		SET product_name = @product_name,
 		manufacturing_date = @converted_manufacturing_date,
@@ -137,7 +156,7 @@ BEGIN
 		type_id = (SELECT TOP 1 id FROM dbo.types WHERE name = @type_name AND unit = @type_unit),
 		unit_mass = @unit_mass,
 		amount = @amount,
-		total_mass = @unit_mass * @amount,
+		total_mass = @total_mass,
 		last_modified = GETDATE(),
 		last_modified_by = (SELECT TOP 1 id FROM dbo.personnel WHERE username = @auth),
 		being_delivered = @being_delivered
@@ -148,31 +167,33 @@ BEGIN
 		RETURN (8)
 	END CATCH
 
-
-	-- check if the db actuall updated
-	IF EXISTS (SELECT id FROM dbo.palettes
-				WHERE product_name = @product_name
-				AND manufacturing_date = @converted_manufacturing_date
-				AND expiration_date = @converted_expiration_date
-				AND order_num = @order_num
-				AND order_date = @converted_order_date
-				AND delivery_date = @converted_delivery_date
-				AND type_id = (SELECT TOP 1 id FROM dbo.types WHERE name = @type_name AND unit = @type_unit)
-				AND unit_mass = @unit_mass
-				AND amount = @amount
-				AND total_mass = @unit_mass * @amount
-				AND last_modified_by = (SELECT TOP 1 id FROM dbo.personnel WHERE username = @auth)
-				AND being_delivered = @being_delivered
-	)
-	BEGIN
-		-- palette was succesfully updated to return successful
-		SET @response = 'SUCCESS'
-		RETURN (0)
-	END
 	
-
-	-- unable to find the updated entry of the paletteo so the UPDATE operation was unsuccessful
-	SET @response = 'Error occurred during the UPDATE operation'
-	RETURN (9)
+	-- check if palette was able to correctly update
+	DECLARE @update_palette_verification_response nvarchar(256)
+	EXEC dbo.uspVerifyPaletteInformation
+		@id = @id,
+		@product_name = @product_name,
+		@converted_manufacturing_date = @converted_manufacturing_date,
+		@converted_expiration_date = @converted_expiration_date,
+		@order_num = @order_num,
+		@converted_order_date = @converted_order_date,
+		@converted_delivery_date = @converted_delivery_date,
+		@type_name = @type_name,
+		@type_unit = @type_unit,
+		@unit_mass = @unit_mass,
+		@amount = @amount,
+		@total_mass = @total_mass,
+		@being_delivered = @being_delivered,
+		@last_modified_by = @auth,
+		@response = @update_palette_verification_response
+	IF (@update_palette_verification_response <> 'SUCCESS')
+	BEGIN
+		SET @response = 'Error occurred during the UPDATE operation'
+		RETURN (9)
+	END
+	-- palette was succesfully updated to return successful
+	SET @response = 'SUCCESS'
+	RETURN (0)
+	
 END
 GO

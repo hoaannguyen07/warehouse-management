@@ -35,7 +35,7 @@ GO
 --		11. ERROR: 'Unable to match delivery date' -> @converted_delivery_date doesn't match delivery_date of @id
 --		12. ERROR: 'Unable to match delivery status' -> @being_delivered doesn't match being_delivered of @id
 --		13. ERROR: 'Unable to match last modified by' -> @last_updated_by doesn't match last_updated_by of @id
---		0. 'SUCCESS' -> successfully updated the information of palette id = @id
+--		0. 'SUCCESS' -> there exists a palette in the db that has all the params
 
 CREATE OR ALTER PROCEDURE [dbo].[uspVerifyPaletteInformation]
 	@id nvarchar(10),
@@ -56,7 +56,7 @@ CREATE OR ALTER PROCEDURE [dbo].[uspVerifyPaletteInformation]
 AS 
 BEGIN
 	SET NOCOUNT ON
-	DECLARE @verify_palette_info_response nvarchar(7) = NULL
+
 	-- check id
 	IF NOT EXISTS (SELECT 1 FROM dbo.palettes WHERE id = @id)
 	BEGIN

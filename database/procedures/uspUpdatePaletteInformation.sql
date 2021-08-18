@@ -49,7 +49,7 @@ CREATE OR ALTER PROCEDURE [dbo].[uspUpdatePaletteInformation]
 	@total_mass int,
 	@being_delivered binary,
 	@auth nvarchar(50),
-	@response nvarchar(256) = NULL OUTPUT
+	@response nvarchar(256) = '' OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -185,13 +185,13 @@ BEGIN
 		@total_mass = @total_mass,
 		@being_delivered = @being_delivered,
 		@last_modified_by = @auth,
-		@response = @update_palette_verification_response
+		@response = @update_palette_verification_response OUTPUT
 	IF (@update_palette_verification_response <> 'SUCCESS')
 	BEGIN
 		SET @response = 'Error occurred during the UPDATE operation'
 		RETURN (9)
 	END
-	-- palette was succesfully updated to return successful
+	-- palette was succesfully updated so return successful
 	SET @response = 'SUCCESS'
 	RETURN (0)
 	

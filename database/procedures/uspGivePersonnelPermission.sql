@@ -13,7 +13,7 @@ GO
 --		1. ERROR: 'Username does not exist' -> @username is not a valid username in the database
 --		2. ERROR: 'Permission does not exist' -> [@action-@object] permission does not exist in the database
 --		3. ERROR: 'Personnel already has this permission' -> @username has the [@action-@object] permission already so nothing is added to the system
---		4. ERROR: 'Unauthorized to delete permission' -> @auth does not have the permission to perform this action 
+--		4. ERROR: 'Unauthorized to give permission' -> @auth does not have the permission to perform this action 
 --		5. ERROR: ERROR_MESSAGE() -> error occurred during the INSERT operation of the personnel permission
 --		6. ERROR: 'Error occurred during the INSERT operation' -> something went wrong during the INSERT operation into the personnel_permissions table but did not cause any errors (or it would've returned ERROR_MESSAGE() instead)
 --		0. 'SUCCESS' -> Successfully gave @username the [@action-@object] permission
